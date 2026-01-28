@@ -41,60 +41,70 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final padding = MediaQuery.of(context).padding;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.grey.shade300,
-                    child: const Icon(Icons.person),
-                  ),
-                  SizedBox(width: 3.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Hi, Amit",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+      body: Padding(
+        padding: EdgeInsets.only(
+          top: padding.top,
+          bottom: padding.bottom,
+          left: 16,
+          right: 16,
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: Colors.grey.shade300,
+                  child: const Icon(Icons.person),
+                ),
+                SizedBox(width: 3.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Hi, Amit",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                      SizedBox(height: 0.5.h),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffE7F8EE),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.circle, size: 8, color: Colors.green),
-                            SizedBox(width: 4),
-                            Text(
-                              "Verified",
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w500,
-                              ),
+                    ),
+                    SizedBox(height: 0.5.h),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffE7F8EE),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.circle, size: 8, color: Colors.green),
+                          SizedBox(width: 4),
+                          Text(
+                            "Verified",
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.green,
+                              fontWeight: FontWeight.w500,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Stack(
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(AppRoutes.notificationScreen);
+                  },
+                  child: Stack(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
@@ -118,81 +128,76 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
 
-              SizedBox(height: 3.h),
+            SizedBox(height: 3.h),
 
-              /// 💳 STATS (same)
-              Row(
-                children: [
-                  Expanded(
-                    child: _stat(
-                      title: "TODAY'S EARNINGS",
-                      value: "₹450.00",
-                      dark: true,
-                    ),
+            /// 💳 STATS (same)
+            Row(
+              children: [
+                Expanded(
+                  child: _stat(
+                    title: "TODAY'S EARNINGS",
+                    value: "₹450.00",
+                    dark: true,
                   ),
-                  SizedBox(width: 4.w),
-                  Expanded(
-                    child: _stat(title: "ORDERS DONE", value: "5", dark: false),
+                ),
+                SizedBox(width: 4.w),
+                Expanded(
+                  child: _stat(title: "ORDERS DONE", value: "5", dark: false),
+                ),
+              ],
+            ),
+
+            const Spacer(),
+            Obx(() {
+              return controller.isOnline.value
+                  ? FindingOrdersWidget()
+                  : _offlineState();
+            }),
+
+            const Spacer(),
+            Obx(
+              () => ElevatedButton(
+                onPressed: () {
+                  controller.toggleOnline();
+
+                  if (controller.isOnline.value) {
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      showOrderBottomSheet(context);
+                    });
+                  }
+                },
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: controller.isOnline.value
+                      ? AppColors.alertRed
+                      : AppColors.primary,
+                  minimumSize: Size(double.infinity, 6.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
-              ),
-
-              const Spacer(),
-
-              /// 🔁 ONLINE / OFFLINE STATE
-              Obx(() {
-                return controller.isOnline.value
-                    ? FindingOrdersWidget()
-                    : _offlineState();
-              }),
-
-              const Spacer(),
-
-              /// 🟢 BUTTON
-              Obx(
-                () => ElevatedButton(
-                  onPressed: () {
-                    controller.toggleOnline();
-
-                    if (controller.isOnline.value) {
-                      Future.delayed(const Duration(milliseconds: 300), () {
-                        showOrderBottomSheet(context);
-                      });
-                    }
-                  },
-
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.isOnline.value  
-                        ? AppColors.alertRed    
-                        : AppColors.primary,
-                    minimumSize: Size(double.infinity, 6.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    controller.isOnline.value ? "GO OFFLINE" : "GO ONLINE",
-                    style: GoogleFonts.nunito(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+                child: Text(
+                  controller.isOnline.value ? "GO OFFLINE" : "GO ONLINE",
+                  style: GoogleFonts.nunito(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
+            ),
 
-              SizedBox(height: 2.h),
-            ],
-          ),
+            SizedBox(height: 2.h),
+          ],
         ),
       ),
     );
   }
 
-  /// 🔴 OFFLINE UI
   Widget _offlineState() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -215,7 +220,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ],
     );
-  } 
+  }
 
   Widget _statusIcon() {
     return Center(
@@ -247,7 +252,8 @@ class HomeScreen extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 12,
-              color: dark ? Colors.white54 : Colors.blue,
+              color: dark ? Colors.white70 : Colors.blue[300],
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 6),

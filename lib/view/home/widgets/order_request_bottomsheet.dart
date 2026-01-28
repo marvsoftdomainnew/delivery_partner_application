@@ -55,7 +55,9 @@ class _OrderRequestBottomsheetState extends State<OrderRequestBottomsheet>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final padding = MediaQuery.of(context).padding; 
+    return Padding(
+      padding: EdgeInsets.only(top: padding.top, bottom: padding.bottom),
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
@@ -121,9 +123,9 @@ class _OrderRequestBottomsheetState extends State<OrderRequestBottomsheet>
                   ),
                 ],
               ),
-
+      
               SizedBox(height: 2.h),
-
+      
               /// NEW REQUEST + EARNING
               Row(
                 children: [
@@ -156,9 +158,9 @@ class _OrderRequestBottomsheetState extends State<OrderRequestBottomsheet>
                   ),
                 ],
               ),
-
+      
               SizedBox(height: 1.5.h),
-
+      
               /// STORE NAME
               Text(
                 widget.order["shop"],
@@ -172,9 +174,9 @@ class _OrderRequestBottomsheetState extends State<OrderRequestBottomsheet>
                 widget.order["address"] ?? "",
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
-
+      
               SizedBox(height: 2.h),
-
+      
               /// PICKUP & DROP
               Container(
                 padding: EdgeInsets.all(3.w),
@@ -198,9 +200,9 @@ class _OrderRequestBottomsheetState extends State<OrderRequestBottomsheet>
                   ],
                 ),
               ),
-
+      
               SizedBox(height: 2.h),
-
+      
               /// ACTION BUTTONS
               Row(
                 children: [

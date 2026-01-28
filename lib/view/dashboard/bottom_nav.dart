@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
@@ -12,7 +13,11 @@ class NeonSpotlightNav extends StatelessWidget {
   NeonSpotlightNav({super.key});
 
   final DashboardController controller = Get.put(DashboardController());
-  final List<Widget> pages = [HomeScreen(), OrderListScreen(), DeliveryPartnerProfile()];
+  final List<Widget> pages = [
+    HomeScreen(),
+    OrderListScreen(),
+    DeliveryPartnerProfile(),
+  ];
 
   final List<IconData> icons = const [
     Icons.home_outlined,
@@ -24,79 +29,112 @@ class NeonSpotlightNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final double navWidth = MediaQuery.of(context).size.width;
     final double itemWidth = navWidth / icons.length;
+
     return Obx(() {
       final index = controller.selectedIndex.value;
 
-      return Scaffold(
-        body: IndexedStack(index: index, children: pages),
+      return WillPopScope(
+        onWillPop: () async {
+          if (index != 0) {
+            controller.changeTab(0);
+            return false;
+          }
 
-        bottomNavigationBar: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-          child: Container(
-            height: 9.h,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  blurRadius: 30,
-                  color: Colors.black38,
-                  offset: Offset(0, 15),
-                ),
-              ],
+          final now = DateTime.now();
+          if (controller.lastBackPressed == null ||
+              now.difference(controller.lastBackPressed!) >
+                  const Duration(seconds: 2)) {
+            controller.lastBackPressed = now;
+
+            Fluttertoast.showToast(
+              msg: "Press back again to exit",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: AppColors.darkGrey,
+              textColor: Colors.white,
+              fontSize: 14,
+            );
+            return false;
+          }
+          return true;
+        },
+
+        child: Scaffold(
+          body: IndexedStack(index: index, children: pages),
+
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom,
             ),
-            child: Stack(
-              children: [
-                /// 🔦 TOP NEON INDICATOR
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                  top: 0,
-                  left: (index * itemWidth) + (itemWidth / 2) - 20,
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(15),
+            child: Container(
+              height: 9.h,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    blurRadius: 30,
+                    color: Colors.black38,
+                    offset: Offset(0, 15),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  /// 🔦 TOP NEON INDICATOR
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    top: 0,
+                    left: (index * itemWidth) + (itemWidth / 2) - 20,
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
                   ),
-                ),
-          
-                /// 🔥 LIGHT BEAM (PERFECT CENTERED)
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                  top: 4, // indicator ke thoda neeche
-                  left: (index * itemWidth) + (itemWidth / 2) - 35,
-                  child: CustomPaint(
-                    size: const Size(70, 80),
-                    painter: _LightBeamPainter(AppColors.primary),
+
+                  /// 🔥 LIGHT BEAM
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    top: 4,
+                    left: (index * itemWidth) + (itemWidth / 2) - 35,
+                    child: CustomPaint(
+                      size: const Size(70, 80),
+                      painter: _LightBeamPainter(AppColors.primary),
+                    ),
                   ),
-                ),
-          
-                /// ICONS
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(
-                    icons.length,
-                    (i) => GestureDetector(
-                      onTap: () => controller.changeTab(i),
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 3.h),
-                        child: Icon(
-                          icons[i],
-                          size: 28,
-                          color: index == i
-                              ? AppColors.primary
-                              : AppColors.darkGrey,
+
+                  /// ICONS
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(
+                      icons.length,
+                      (i) => GestureDetector(
+                        onTap: () => controller.changeTab(i),
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 3.h),
+                          child: Icon(
+                            icons[i],
+                            size: 28,
+                            color: index == i
+                                ? AppColors.primary
+                                : AppColors.darkGrey,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

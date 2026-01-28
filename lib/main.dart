@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'routes/app_routes.dart';
@@ -12,14 +13,20 @@ class FishPartnerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Sizer(
-      builder: (context, orientation, deviceType) {
-        return GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          initialRoute: AppRoutes.splash,
-          getPages: AppRoutes.getRoutes(),
-        );
-      },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+      child: Sizer(
+        builder: (context, orientation, deviceType) {
+          return GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            initialRoute: AppRoutes.splash,
+            getPages: AppRoutes.getRoutes(),
+          );
+        },
+      ),
     );
   }
 }

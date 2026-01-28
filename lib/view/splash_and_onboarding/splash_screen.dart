@@ -1,6 +1,10 @@
+import 'dart:ui';
 import 'package:fish_delivery_partner_flutter/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../constants/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,10 +17,10 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _textController;
-  late Animation<double> _scaleAnimation;
-  // late Animation<double> _logoFadeAnimation;
-  // late Animation<double> _textFadeAnimation;
-  // late Animation<Offset> _slideAnimation;
+
+  late Animation<double> _logoScale;
+  late Animation<double> _logoFade;
+  late Animation<Offset> _textSlide;
 
   @override
   void initState() {
@@ -24,17 +28,28 @@ class _SplashScreenState extends State<SplashScreen>
 
     _logoController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1100),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _textController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 800),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
+    _logoScale = Tween<double>(begin: 0.7, end: 1).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutExpo),
     );
+
+    _logoFade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeIn));
+
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
+
     _logoController.forward();
     _logoController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -42,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
       }
     });
 
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.login);
       }
@@ -59,82 +74,105 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF0D47A1), // Deep blue
-              const Color(0xFF1976D2), // Medium blue
-              const Color(0xFF42A5F5), // Light blue
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Animated background circles
-            Positioned(
-              top: -10.h,
-              right: -10.w,
-              child: Container(
-                width: 60.w,
-                height: 60.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -15.h,
-              left: -15.w,
-              child: Container(
-                width: 70.w,
-                height: 70.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.08),
-                ),
-              ),
-            ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/bgimages/splashbg.png', fit: BoxFit.cover),
 
-            // Main content
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo with scale animation
-                  ScaleTransition(
-                    scale: _scaleAnimation,
+          Container(color: Colors.white.withOpacity(0.35)),
+
+          // Positioned.fill(
+          //   child: BackdropFilter(
+          //     filter: ImageFilter.blur(sigmaX: 1, sigmaY: 0),
+          //     child: Container(color: Colors.transparent),
+          //   ),
+          // ),
+          Transform.translate(
+            offset: Offset(0, 8.h), // 👈 yahan value adjust karo
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FadeTransition(
+                  opacity: _logoFade,
+                  child: ScaleTransition(
+                    scale: _logoScale,
                     child: Container(
-                      padding: EdgeInsets.all(1.w),
+                      padding: EdgeInsets.all(3.w),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
-                            blurRadius: 30,
-                            spreadRadius: 5,
+                            blurRadius: 10,
+                            spreadRadius: 4,
                           ),
                         ],
                       ),
-                      child: Container(
-                        padding: EdgeInsets.all(3.w),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: Image.asset(
-                          'assets/images/splashlogo.png',
-                          width: 15.h,
-                          height: 15.h,
-                        ),
+                      child: Image.asset(
+                        'assets/images/splashlogo.png',
+                        width: 16.h,
+                        height: 16.h,
                       ),
                     ),
                   ),
+                ),
+
+                SizedBox(height: 4.h),
+
+                SlideTransition(
+                  position: _textSlide,
+                  child: FadeTransition(
+                    opacity: _textController,
+                    child: Column(
+                      children: [
+                        Text(
+                          "Fish Delivery Partner".toUpperCase(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: 1.h),
+                        Text(
+                          "Fresh • Fast • Reliable",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15.sp,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                   // SizedBox(height: 5.h),
 
@@ -177,12 +215,3 @@ class _SplashScreenState extends State<SplashScreen>
                   //     ),
                   //   ),
                   // ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -67,7 +67,7 @@ Widget build(BuildContext context) {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-    
+      iconTheme: IconThemeData(color: Colors.white),
       backgroundColor: const Color(0xff1E40AF),
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(

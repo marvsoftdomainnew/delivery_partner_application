@@ -1,14 +1,15 @@
+import 'package:fish_delivery_partner_flutter/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../constants/app_colors.dart';
 
 class MenuItemData {
   final IconData icon;
   final String title;
+  final String? route;
 
-  const MenuItemData({required this.icon, required this.title});
+  const MenuItemData({required this.icon, required this.title, this.route});
 }
 
 class MenuTile extends StatefulWidget {
@@ -26,9 +27,11 @@ class _MenuTileState extends State<MenuTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: () {
+        if (widget.item.route != null) {
+          Get.toNamed(widget.item.route!);
+        }
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         margin: EdgeInsets.only(top: 1.h),
@@ -47,13 +50,13 @@ class _MenuTileState extends State<MenuTile> {
                 style: GoogleFonts.poppins(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF334155),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),
             const Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFF94A3B8),
+              color: AppColors.textSecondary,
               size: 22,
             ),
           ],
@@ -66,64 +69,6 @@ class _MenuTileState extends State<MenuTile> {
 // ---------------------------
 // Menu Section
 // ---------------------------
-class MenuSection extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<MenuItemData> items;
-
-  const MenuSection({
-    super.key,
-    required this.title,
-    required this.icon,
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(3.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: AppColors.primary, size: 20),
-              ),
-              SizedBox(width: 3.w),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1E293B),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 1.h),
-          ...items.map((item) => MenuTile(item: item)),
-        ],
-      ),
-    );
-  }
-}
 
 Widget earningCardGlass({
   required String amount,

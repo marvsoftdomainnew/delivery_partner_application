@@ -15,26 +15,16 @@ class FindingOrdersWidget extends StatefulWidget {
 class _FindingOrdersWidgetState extends State<FindingOrdersWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  // late Animation<double> _scaleAnimation;
 
   int _dotCount = 1;
 
   @override
   void initState() {
     super.initState();
-
-    /// pulse animation (same as before)
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
-
-    // _scaleAnimation = Tween<double>(
-    //   begin: 0.8,
-    //   end: 1.2,
-    // ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-
-    /// dots animation
     _startDotsAnimation();
   }
 

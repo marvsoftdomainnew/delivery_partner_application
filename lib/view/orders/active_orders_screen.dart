@@ -1,3 +1,4 @@
+import 'package:fish_delivery_partner_flutter/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -81,13 +82,13 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
-          colors: [const Color(0xff3B82F6), const Color(0xff2563EB)],
+          colors: [AppColors.primary, const Color(0xff2563EB)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff2563EB).withOpacity(0.3),
+            color: AppColors.primary.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -418,6 +419,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
 
 
   Widget _buildActionButton() {
+    final padding = MediaQuery.of(context).padding;
     final labels = ['Mark Reached', 'Mark Picked Up', 'Complete Delivery'];
 
     return Container(
@@ -432,7 +434,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
           ),
         ],
       ),
-      child: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: padding.bottom),
         child: ElevatedButton(
           onPressed: () {
             if (currentStep < 2) {
@@ -443,7 +446,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xff2563EB),
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 2.h),
             elevation: 0,

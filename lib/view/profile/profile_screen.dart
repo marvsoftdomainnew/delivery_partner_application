@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../constants/app_colors.dart';
+import '../../routes/app_routes.dart';
 import 'widgets/menu_item_data.dart';
+import 'widgets/menu_section_card.dart';
 
 class DeliveryPartnerProfile extends StatefulWidget {
   const DeliveryPartnerProfile({super.key});
@@ -53,32 +56,18 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.lighterGrey.withOpacity(0.6),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        title: Padding(
-          padding: EdgeInsets.only(bottom: 16),
-          child: Text(
-            "Profile",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF1E293B),
-            ),
+        backgroundColor: AppColors.primary,
+        centerTitle: true,
+        title: Text(
+          "Profile",
+          style: GoogleFonts.poppins(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w500,
+            color: AppColors.white,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: Color(0xFF64748B),
-            ),
-            onPressed: () {},
-          ),
-          SizedBox(width: 2.w),
-        ],
       ),
       body: SingleChildScrollView(
         child: FadeTransition(
@@ -106,8 +95,8 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
                                 "Aman Kumar",
                                 style: GoogleFonts.poppins(
                                   fontSize: 18.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF1E293B),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               SizedBox(height: 0.5.h),
@@ -115,12 +104,10 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
                                 "Partner ID: DP102345",
                                 style: GoogleFonts.poppins(
                                   fontSize: 13.sp,
-                                  color: const Color(0xFF64748B),
+                                  color: AppColors.textSecondary,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              // SizedBox(height: 1.h),
-                              // _buildRatingBadge(),
                             ],
                           ),
                         ),
@@ -244,71 +231,183 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
                     ],
                   ),
                   SizedBox(height: 3.h),
-                  MenuSection(
+                  MenuSectionCard(
                     title: "Work",
                     icon: Icons.work_outline_rounded,
                     items: const [
                       MenuItemData(
                         icon: Icons.receipt_long_rounded,
                         title: "Order History",
-                      ),
-                      MenuItemData(
-                        icon: Icons.two_wheeler_rounded,
-                        title: "Vehicle Details",
-                      ),
-                      MenuItemData(
-                        icon: Icons.description_outlined,
-                        title: "Documents",
+                        route: AppRoutes.orderHistory,
                       ),
                       MenuItemData(
                         icon: Icons.attach_money_rounded,
                         title: "Earnings Report",
+                        route: AppRoutes.earningReport,
                       ),
                     ],
                   ),
                   SizedBox(height: 2.h),
-                  MenuSection(
+                  MenuSectionCard(
                     title: "Account",
                     icon: Icons.person_outline_rounded,
                     items: const [
                       MenuItemData(
-                        icon: Icons.edit_outlined,
-                        title: "Edit Profile",
-                      ),
-                      MenuItemData(
                         icon: Icons.account_balance_outlined,
                         title: "Bank Details",
+                        route: AppRoutes.bankDetails,
                       ),
                     ],
                   ),
-                  // SizedBox(height: 2.h),
-                  // const MenuSection(
-                  //   title: "Support",
-                  //   icon: Icons.support_agent_outlined,
-                  //   items: const [
-                  //     MenuItemData(
-                  //       icon: Icons.help_outline_rounded,
-                  //       title: "Help Center",
-                  //     ),
-                  //     MenuItemData(
-                  //       icon: Icons.privacy_tip_outlined,
-                  //       title: "Privacy Policy",
-                  //     ),
-                  //     MenuItemData(
-                  //       icon: Icons.info_outline_rounded,
-                  //       title: "About",
-                  //     ),
-                  //   ],
-                  // ),
                   SizedBox(height: 2.h),
                   ElevatedButton.icon(
-                    onPressed: () {},
-                    icon:  Icon(Icons.logout_rounded, size: 6.w),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            backgroundColor: AppColors.white,
+                            insetPadding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            contentPadding: const EdgeInsets.fromLTRB(
+                              24,
+                              24,
+                              24,
+                              16,
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // 🔴 Icon Container
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.alertRed.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.logout_rounded,
+                                    size: 32,
+                                    color: AppColors.alertRed,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // 📝 Title
+                                Text(
+                                  "Confirm Logout",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+
+                                const SizedBox(height: 8),
+
+                                // 📄 Message
+                                Text(
+                                  "Are you sure you want to logout?\nYou’ll need to login again to continue.",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+
+                            actionsPadding: const EdgeInsets.fromLTRB(
+                              16,
+                              8,
+                              16,
+                              20,
+                            ),
+                            actions: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.alertRed,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "Cancel",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 12),
+
+                                  // ✅ Logout Button
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        Get.offAllNamed(AppRoutes.login);
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                      ),
+
+                                      child: Text(
+                                        "Logout",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.alertRed,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.logout_rounded, size: 6.w),
                     label: Text(
                       "Logout",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.white,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -321,6 +420,7 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
                       elevation: 4,
                     ),
                   ),
+
                   SizedBox(height: 4.h),
                 ],
               ),
@@ -353,33 +453,6 @@ class _DeliveryPartnerProfileState extends State<DeliveryPartnerProfile>
       child: const Icon(Icons.person_rounded, color: Colors.white, size: 36),
     );
   }
-
-  // Widget _buildRatingBadge() {
-  //   return Container(
-  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  //     decoration: BoxDecoration(
-  //       gradient: const LinearGradient(
-  //         colors: [Color(0xFFFBBF24), Color(0xFFF59E0B)],
-  //       ),
-  //       borderRadius: BorderRadius.circular(20),
-  //     ),
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         const Icon(Icons.star_rounded, color: Colors.white, size: 16),
-  //         SizedBox(width: 1.w),
-  //         Text(
-  //           "4.6 Rating",
-  //           style: GoogleFonts.poppins(
-  //             fontSize: 12.sp,
-  //             fontWeight: FontWeight.w600,
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   BoxDecoration _cardDecoration() {
     return BoxDecoration(

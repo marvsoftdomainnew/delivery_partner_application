@@ -44,6 +44,7 @@ class AppColors {
   static const Color successGreen = Color(0xFF008000);
   static const Color confirmGreen = Color(0xFF43A047);
   static const Color accentGreen = Color(0xFF66BB6A);
+  static const Color textGreen = Color(0xFF10B981);
   static const Color gold = Color(0xFFFDD017);
   static const Color transparent = Color(0x00000000);
   // Reds
