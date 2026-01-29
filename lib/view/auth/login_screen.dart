@@ -31,20 +31,20 @@ class _LoginScreenState extends State<LoginScreen>
     final padding = MediaQuery.of(context).padding;
     return Scaffold(
       backgroundColor: AppColors.white,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('assets/bgimages/loginbg.png', fit: BoxFit.cover),
-          Container(color: Colors.white.withOpacity(0.75)),
+          Container(color: Colors.white.withOpacity(0.85)),
 
           Padding(
             padding: EdgeInsets.only(top: padding.top, bottom: padding.bottom, left: 16, right: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 4.h),
-
+              children: [                                                 
+                SizedBox(height: 6.h),
+            
                 Center(
                   child: Container(
                     padding: EdgeInsets.all(3.w),
@@ -70,9 +70,9 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-
-                SizedBox(height: 5.h),
-
+            
+                SizedBox(height: 10.h),
+            
                 Text(
                   'Welcome Back!',
                   style: GoogleFonts.poppins(
@@ -81,9 +81,9 @@ class _LoginScreenState extends State<LoginScreen>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
+            
                 SizedBox(height: 1.h),
-
+            
                 Text(
                   'Login to continue your journey',
                   style: GoogleFonts.poppins(
@@ -92,81 +92,32 @@ class _LoginScreenState extends State<LoginScreen>
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
+            
                 SizedBox(height: 4.h),
-
+            
                 _buildInputLabel('Mobile Number'),
                 SizedBox(height: 1.h),
                 _buildPhoneInputField(
                   MediaQuery.of(context).size.width,
                   MediaQuery.of(context).size.height,
                 ),
-
+            
                 SizedBox(height: 2.5.h),
-
+            
                 _buildInputLabel('Password'),
                 SizedBox(height: 1.h),
                 _buildPasswordInputField(
                   MediaQuery.of(context).size.width,
                   MediaQuery.of(context).size.height,
                 ),
-
-                SizedBox(height: 0.5.h),
-
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Forgot Password?',
-                      style: GoogleFonts.poppins(
-                        fontSize: 15.sp,
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
+            
+                SizedBox(height: 1.5.h),
                 SizedBox(height: 4.h),
                 _buildLoginButton(
                   MediaQuery.of(context).size.height,
                   MediaQuery.of(context).size.width,
                 ),
-
                 SizedBox(height: 4.h),
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.darkGrey,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          "Sign Up",
-                          style: GoogleFonts.poppins(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 2.h),
               ],
             ),
           ),

@@ -8,6 +8,7 @@ class OrdersController extends GetxController {
       "earning": 85,
       "shop": "Machli Bazar - Sector 4",
       "pickup": "Fish Market",
+      "customer_phone": "919454310605",
       "drop": "Gomti Nagar",
       "address": "Shop 12, Fish Market, Gomti Nagar",
       "status": "accepted",
@@ -16,6 +17,8 @@ class OrdersController extends GetxController {
       "earning": 70,
       "shop": "Fresh Fish Point",
       "pickup": "Alambagh",
+      "customer_phone": "91120304050",
+
       "drop": "Charbagh",
       "address": "Shop 5, Alambagh, Lucknow",
       "status": "pending",
@@ -24,6 +27,8 @@ class OrdersController extends GetxController {
       "earning": 95,
       "shop": "Sea Food Hub",
       "pickup": "Indira Nagar",
+      "customer_phone": "91120304050",
+
       "drop": "Hazratganj",
       "address": "Shop 9, Indira Nagar, Lucknow",
       "status": "completed",
@@ -32,6 +37,8 @@ class OrdersController extends GetxController {
       "earning": 95,
       "shop": "Sea Food Hub",
       "pickup": "Indira Nagar",
+      "customer_phone": "91120304050",
+
       "drop": "Hazratganj",
       "address": "Shop 9, Indira Nagar, Lucknow",
       "status": "cancelled",

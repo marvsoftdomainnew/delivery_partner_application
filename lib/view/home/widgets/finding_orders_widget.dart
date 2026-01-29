@@ -14,36 +14,48 @@ class FindingOrdersWidget extends StatefulWidget {
 
 class _FindingOrdersWidgetState extends State<FindingOrdersWidget>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
+  late AnimationController _pulseController;
   int _dotCount = 1;
+  bool _isMounted = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
     _startDotsAnimation();
   }
 
   void _startDotsAnimation() {
     Future.doWhile(() async {
+      if (!_isMounted) return false;
+
       await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return false;
+      
+      if (!mounted) {
+        _isMounted = false;
+        return false;
+      }
 
       setState(() {
-        _dotCount++;
-        if (_dotCount > 4) _dotCount = 1;
+        _dotCount = (_dotCount % 3) + 1;
       });
+      
       return true;
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _isMounted = false;
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -52,149 +64,186 @@ class _FindingOrdersWidgetState extends State<FindingOrdersWidget>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        /// 🔵 PULSE CIRCLE
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            // 🔵 Ripple / Scale background
-            // ScaleTransition(
-            //   scale: _scaleAnimation,
-            //   child: Container(
-            //     width: 160,
-            //     height: 160,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       color: Colors.blue.withOpacity(0.08),
-            //     ),
-            //   ),
-            // ),
+        _buildAnimatedSearchIcon(),
+        SizedBox(height: 3.h),
+        _buildLoadingText(),
+        SizedBox(height: 1.5.h),
+        // _buildSubtitle(),
+        SizedBox(height: 3.h),
+        // _buildPulsingIndicators(),
+      ],
+    );
+  }
 
-            // 🟦 Main circle
-            // Container(
-            //   width: 24.h,
-            //   height: 24.h,
-            //   decoration: const BoxDecoration(
-            //     shape: BoxShape.circle,
-            //     color: Color(0xffE3EEFF),
-            //   ),
-            // ),
+  Widget _buildAnimatedSearchIcon() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedBuilder(
+          animation: _pulseController,
+          builder: (context, child) {
+            return Container(
+              width: 36.h * (0.9 + (_pulseController.value * 0.1)),
+              height: 36.h * (0.9 + (_pulseController.value * 0.1)),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.primary.withOpacity(0.1 * _pulseController.value),
+                    AppColors.primary.withOpacity(0.02 * _pulseController.value),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        Lottie.asset(
+          'assets/lottie/Searching Animation.json',
+          width: 32.h,
+          height: 32.h,
+          repeat: true,
+          fit: BoxFit.contain,
+          frameRate: FrameRate(24),
+        ),
 
-            // 🎬 First Lottie (background animation)
-            Lottie.asset(
-              'assets/lottie/Searching Animation.json',
-              width: 34.h,
-              height: 34.h,
+        // Center Package Icon
+        Padding(
+          padding: EdgeInsets.only(bottom: 1.8.h),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
+              ],
+            ),
+            child: Lottie.asset(
+              'assets/lottie/Order packed.json',
+              width: 14.h,
+              height: 14.h,
               repeat: true,
               fit: BoxFit.contain,
               frameRate: FrameRate(24),
             ),
-
-            // ⭐ Second Lottie (exact center)
-            Padding(
-              padding:  EdgeInsets.only(bottom: 1.8.h),
-              child: Lottie.asset(
-                'assets/lottie/Order packed.json',
-                width: 14.h, // chhota rakho
-                height: 14.h,
-                repeat: true,
-                fit: BoxFit.contain,
-                frameRate: FrameRate(24),
-              ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 4.h),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Finding Orders",
-              style: GoogleFonts.poppins(
-                fontSize: 17.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
-            ),
-
-            SizedBox(
-              width: 11.w,
-              child: Text(
-                "." * _dotCount,
-                style: GoogleFonts.poppins(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 2.h),
-
-        Text(
-          "Scanning nearby fish markets",
-          style: GoogleFonts.poppins(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGrey,
           ),
         ),
       ],
     );
   }
+
+  Widget _buildLoadingText() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_rounded,
+            color: AppColors.primary,
+            size: 20,
+          ),
+          SizedBox(width: 8),
+          Text(
+            "Finding Orders",
+            style: GoogleFonts.poppins(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          SizedBox(
+            width: 30,
+            child: Text(
+              "." * _dotCount,
+              style: GoogleFonts.poppins(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget _buildSubtitle() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Container(
+  //         width: 6,
+  //         height: 6,
+  //         decoration: BoxDecoration(
+  //           color: AppColors.primary,
+  //           shape: BoxShape.circle,
+  //         ),
+  //       ),
+  //       SizedBox(width: 8),
+  //       Text(
+  //         "Scanning nearby fish markets",
+  //         style: GoogleFonts.poppins(
+  //           fontSize: 13.sp,
+  //           fontWeight: FontWeight.w500,
+  //           color: AppColors.darkGrey,
+  //           letterSpacing: 0.2,
+  //         ),
+  //       ),
+  //       SizedBox(width: 8),
+  //       Container(
+  //         width: 6,
+  //         height: 6,
+  //         decoration: BoxDecoration(
+  //           color: AppColors.primary,
+  //           shape: BoxShape.circle,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  // Widget _buildPulsingIndicators() {
+  //   return AnimatedBuilder(
+  //     animation: _pulseController,
+  //     builder: (context, child) {
+  //       return Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: List.generate(3, (index) {
+  //           final delay = index * 0.3;
+  //           final animValue = (_pulseController.value + delay) % 1.0;
+            
+  //           return Padding(
+  //             padding: const EdgeInsets.symmetric(horizontal: 4),
+  //             child: Container(
+  //               width: 8 + (animValue * 4),
+  //               height: 8 + (animValue * 4),
+  //               decoration: BoxDecoration(
+  //                 color: AppColors.primary.withOpacity(1 - animValue * 0.5),
+  //                 shape: BoxShape.circle,
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: AppColors.primary.withOpacity(0.3),
+  //                     blurRadius: 8 * animValue,
+  //                     spreadRadius: 2 * animValue,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         }),
+  //       );
+  //     },
+  //   );
+  // }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:sizer/sizer.dart';
-
-// class FindingOrdersWidget extends StatefulWidget {
-//   const FindingOrdersWidget({super.key});
-
-//   @override
-//   State<FindingOrdersWidget> createState() => _FindingOrdersWidgetState();
-// }
-
-// class _FindingOrdersWidgetState extends State<FindingOrdersWidget>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController controller;
-
-//   @override
-//   void initState() {
-//     controller = AnimationController(
-//       vsync: this,
-//       duration: const Duration(seconds: 2),
-//     )..repeat();
-//     super.initState();
-//   }
-
-//   @override
-//   void dispose() {
-//     controller.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         ScaleTransition(
-//           scale: Tween(begin: 0.8, end: 1.2).animate(controller),
-//           child: CircleAvatar(
-//             radius: 45,
-//             backgroundColor: Colors.blue.withOpacity(0.1),
-//             child: const Icon(Icons.store, size: 40, color: Colors.blue),
-//           ),
-//         ),
-//         SizedBox(height: 3.h),
-//         const Text("Finding Orders...",
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-//         const SizedBox(height: 8),
-//         const Text("Scanning nearby fish markets",
-//             style: TextStyle(color: Colors.grey)),
-//       ],
-//     );
-//   }
-// }

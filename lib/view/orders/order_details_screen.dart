@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
-class ActiveOrderScreen extends StatefulWidget {
-  const ActiveOrderScreen({super.key});
+class OrderDetailsScreen extends StatefulWidget {
+  const OrderDetailsScreen({super.key});
 
   @override
-  State<ActiveOrderScreen> createState() => _ActiveOrderScreenState();
+  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
 }
 
-class _ActiveOrderScreenState extends State<ActiveOrderScreen>
+class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     with SingleTickerProviderStateMixin {
   late Map<String, dynamic> order;
   int currentStep = 0;
@@ -33,6 +34,44 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
     _animController.dispose();
     super.dispose();
   }
+ void _callCustomer() async {
+  try {
+    final uri = Uri(scheme: 'tel', path: order['customer_phone']);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e) {
+    Get.snackbar('Error', 'Unable to make call');
+  }
+}
+
+
+void _whatsAppCustomer() async {
+  try {
+    final uri = Uri.parse(
+      'https://wa.me/${order['customer_phone']}?text=${Uri.encodeComponent(
+        'Hi, I am your delivery partner for order ${order['order_id']}',
+      )}',
+    );
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+    Get.snackbar('Error', 'WhatsApp not available');
+  }
+}
+
+
+// void _whatsAppCustomer() async {
+//   final uri = Uri.parse(
+//     'https://wa.me/${order['customer_phone']}?text=${Uri.encodeComponent(
+//       'Hi, I am your delivery partner for order ${order['order_id']}',
+//     )}',
+//   );
+
+//   if (await canLaunchUrl(uri)) {
+//     await launchUrl(uri, mode: LaunchMode.externalApplication);
+//   } else {
+//     Get.snackbar('Error', 'WhatsApp not installed');
+//   }
+// }
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +135,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
       ),
       child: Stack(
         children: [
-          // Positioned.fill(
-          //   child: Icon(
-          //     Icons.route_outlined,
-          //     size: 80,
-          //     color: Colors.white.withOpacity(0.1),
-          //   ),
-          // ),
+
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -182,6 +215,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
             const Color(0xffEF4444),
           ),
           SizedBox(height: 1.5.h),
+          _buildCommunicationRow(),
+          SizedBox(height: 2.h),
           Divider(color: Colors.grey.shade200, thickness: 1),
           SizedBox(height: 1.5.h),
           _buildEarningCard(),
@@ -292,132 +327,6 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
       ),
     );
   }
-
-  // Widget _buildTrackingTimeline() {
-  //   final steps = [
-  //     {'label': 'Reached Shop', 'icon': Icons.store},
-  //     {'label': 'Picked Up', 'icon': Icons.shopping_bag},
-  //     {'label': 'Delivered', 'icon': Icons.check_circle},
-  //   ];
-
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(horizontal: 4.w),
-  //     padding: EdgeInsets.all(5.w),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(20),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.04),
-  //           blurRadius: 20,
-  //           offset: const Offset(0, 4),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           'Order Status',
-  //           style: GoogleFonts.inter(
-  //             fontSize: 16.sp,
-  //             fontWeight: FontWeight.w700,
-  //             color: const Color(0xff1E293B),
-  //           ),
-  //         ),
-  //         SizedBox(height: 2.h),
-  //         ...List.generate(steps.length, (index) {
-  //           final isActive = index <= currentStep;
-  //           final isCompleted = index < currentStep;
-  //           return _buildTimelineStep(
-  //             steps[index]['label'] as String,
-  //             steps[index]['icon'] as IconData,
-  //             isActive,
-  //             isCompleted,
-  //             index != steps.length - 1,
-  //           );
-  //         }),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildTimelineStep(
-  //   String label,
-  //   IconData icon,
-  //   bool isActive,
-  //   bool isCompleted,
-  //   bool showLine,
-  // ) {
-  //   return Row(
-  //     children: [
-  //       Column(
-  //         children: [
-  //           AnimatedContainer(
-  //             duration: const Duration(milliseconds: 300),
-  //             height: 44,
-  //             width: 44,
-  //             decoration: BoxDecoration(
-  //               color: isActive
-  //                   ? const Color(0xff2563EB)
-  //                   : const Color(0xffE2E8F0),
-  //               shape: BoxShape.circle,
-  //               boxShadow: isActive
-  //                   ? [
-  //                       BoxShadow(
-  //                         color: const Color(0xff2563EB).withOpacity(0.3),
-  //                         blurRadius: 12,
-  //                         offset: const Offset(0, 4),
-  //                       ),
-  //                     ]
-  //                   : [],
-  //             ),
-  //             child: Icon(
-  //               isCompleted ? Icons.check : icon,
-  //               color: isActive ? Colors.white : const Color(0xff94A3B8),
-  //               size: 22,
-  //             ),
-  //           ),
-  //           if (showLine)
-  //             Container(
-  //               height: 5.h,
-  //               width: 2,
-  //               margin: EdgeInsets.symmetric(vertical: 0.5.h),
-  //               decoration: BoxDecoration(
-  //                 gradient: LinearGradient(
-  //                   begin: Alignment.topCenter,
-  //                   end: Alignment.bottomCenter,
-  //                   colors: isActive
-  //                       ? [
-  //                           const Color(0xff2563EB),
-  //                           const Color(0xff2563EB).withOpacity(0.3),
-  //                         ]
-  //                       : [const Color(0xffE2E8F0), const Color(0xffE2E8F0)],
-  //                 ),
-  //               ),
-  //             ),
-  //         ],
-  //       ),
-  //       SizedBox(width: 4.w),
-  //       Expanded(
-  //         child: Text(
-  //           label,
-  //           style: GoogleFonts.inter(
-  //             fontSize: 15.sp,
-  //             fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-  //             color: isActive
-  //                 ? const Color(0xff0F172A)
-  //                 : const Color(0xff94A3B8),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-
-
-
   Widget _buildActionButton() {
     final padding = MediaQuery.of(context).padding;
     final labels = ['Mark Reached', 'Mark Picked Up', 'Complete Delivery'];
@@ -473,4 +382,66 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen>
       ),
     );
   }
+  Widget _buildCommunicationRow() {
+  return Row(
+    children: [
+      Expanded(
+        child: InkWell(
+          onTap: _callCustomer,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 1.5.h),
+            decoration: BoxDecoration(
+              color: const Color(0xff3B82F6).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.call, color: Color(0xff2563EB), size: 18),
+                SizedBox(width: 2.w),
+                Text(
+                  'Call',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff2563EB),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      SizedBox(width: 3.w),
+      Expanded(
+        child: InkWell(
+          onTap: _whatsAppCustomer,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 1.5.h),
+            decoration: BoxDecoration(
+              color: const Color(0xff22C55E).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.chat, color: Color(0xff16A34A), size: 18),
+                SizedBox(width: 2.w),
+                Text(
+                  'Chat',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xff16A34A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 }
